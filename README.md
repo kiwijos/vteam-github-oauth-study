@@ -420,9 +420,9 @@ export const load: PageServerLoad = async ({ url, cookies }) => {
 }
 ```
 
-### Hoom to check requests
+### Hook to check requests
 
-In SvelteKit, middleware are called hooks.
+Hooks are esentially middleware.
 
 We'll create a new file, add a hook that runs every time there's a request and gets the access token from the cookie.
 
