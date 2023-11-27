@@ -1,2 +1,10 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	import { PUBLIC_GITHUB_ID } from '$env/static/public';
+</script>
+
+<p>
+	Sign in using <a
+		href="https://github.com/login/oauth/authorize?scope=user:email&client_id={PUBLIC_GITHUB_ID}"
+		>GitHub</a
+	>
+</p>
