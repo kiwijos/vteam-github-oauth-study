@@ -191,7 +191,7 @@ app.get('/callback', (req, res) => {
 
 #### 2. Exchange the code for an access token
 
-Get the code. SvelteKit provides us with the parsed query string as an object.
+SvelteKit provides us with the parsed query string as an object.
 
 ```js
 import type { PageServerLoad } from './$types';
@@ -210,7 +210,7 @@ app.get('/callback', (req, res) => {
 });
 ```
 
-Handle errors. If you deny access to your personal information, you won't get a code. Instead the response looks something like this:
+If you deny access to your personal information, you won't get a code. Instead the response looks something like this:
 
 ![User denies access](./static/img/access_denied.png)
 
