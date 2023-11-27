@@ -2,7 +2,7 @@
 
 ## Where we're going
 
-"Sign in using GitHub", on a button, with a link that let's users sign in to your app using GitHub. That's the goal of this tech demo. (But let's be honest, it's mostly going to be you signing in––isn't it?) With the user's permission, we will make requests on their behalf to the GitHub API and retrieve information like their name and private email addresses.
+"Sign in using GitHub". As a link. In your app. That let's users sign into the app using GitHub. That's the goal of this tech demo. (But let's be honest, it's mostly going to be you signing in––isn't it?) With the user's permission, we will make requests on their behalf to the GitHub API and retrieve information like their name and private email addresses.
 
 ## What to expect
 
