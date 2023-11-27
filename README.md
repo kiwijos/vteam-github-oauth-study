@@ -226,7 +226,7 @@ export const load: PageServerLoad = async ({ url, fetch, cookies }) => {
 
   // if no code redirect to the root route 
   if (!code || code === null) {
-	throw redirect(302, '/');
+    throw redirect(302, '/');
   }
 };
 ```
@@ -261,8 +261,8 @@ const data = {
 const response = await fetch('https://github.com/login/oauth/access_token', {
   method: 'POST',
   headers: {
-	'Content-Type': 'application/json',
-	Accept: 'application/json'
+    'Content-Type': 'application/json',
+    Accept: 'application/json'
   },
   body: JSON.stringify(data)
 });
@@ -333,21 +333,15 @@ const userResponse = await fetch('https://api.github.com/user', {
 const userData = await userResponse.json();
 ```
 
-The user information (i.e. `userData`) looks something like this:
+The user information looks something like this (I've omitted several fields):
 
-```js
+```json
 {
-  login: "kiwijos",
-  ...
-  avatar_url: "https://avatars.githubusercontent.com/...",
-  ...
-  type: "User",
-  ...
-  public_repos: 10,
-  public_gists: 0,
-  followers: 0,
-  following: 0 
-  ...
+  "login": "kiwijos",
+  "avatar_url": "https://avatars.githubusercontent.com/...",
+  "type": "User",
+  "public_repos": 10,
+  "public_gists": 0,
 }
 ```
 
@@ -368,16 +362,16 @@ The email data looks like an array (I've added \*\*\* to obscure any personal de
 ```json
 [
   {
-	"email": "***@***.***",
-	"primary": true,
-	"verified": true,
-	"visibility": "private"
+    "email": "***@***.***",
+    "primary": true,
+    "verified": true,
+    "visibility": "private"
   },
   {
-	"email": "***@users.noreply.github.com",
-	"primary": false,
-	"verified": true,
-	"visibility": null
+    "email": "***@users.noreply.github.com",
+    "primary": false,
+    "verified": true,
+    "visibility": null
   }
 ]
 ```
@@ -415,11 +409,11 @@ export const load: PageServerLoad = async ({ url, cookies }) => {
 
   // persist the token in a cookie
   cookies.set('session', accessToken, {
-	path: '/', // send cookie with every request to this site
-	httpOnly: true, // server side only cookie (i.e. not accessible via `document.cookie`)
-	sameSite: 'strict', // send cookie only via requests from this site
-	secure: true, // allow cookie to be sent only in secure contexts (i.e. locally or over HTTPS)
-	maxAge: 60 * 60 * 24 * 30 // make cookie expire after 30 days
+    path: '/', // send cookie with every request to this site
+    httpOnly: true, // server side only cookie (i.e. not accessible via `document.cookie`)
+    sameSite: 'strict', // send cookie only via requests from this site
+    secure: true, // allow cookie to be sent only in secure contexts (i.e. locally or over HTTPS)
+    maxAge: 60 * 60 * 24 * 30 // make cookie expire after 30 days
   });
 
   throw redirect(302, '/');
@@ -449,8 +443,8 @@ import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
   if (event.url.pathname.startsWith('/protected')) {
-	// check credentials
-	// redirect if incorrect
+    // check credentials
+    // redirect if incorrect
   }
 
   // handle the request as normal
@@ -474,8 +468,8 @@ export const handle: Handle = async ({ event, resolve }) => {
   const accessToken = event.cookies.get('session');
 
   if (!accessToken || accessToken === null) {
-	// handle the request as normal
-	return await resolve(event);
+    // handle the request as normal
+    return await resolve(event);
   } 
 };
 ```
@@ -519,8 +513,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   // add the user to the request
   event.locals.user = {
-	name: userData.login,
-	email: emailData.find((email) => email.primary === true).email
+    name: userData.login,
+    email: emailData.find((email) => email.primary === true).email
   };
 
   return await resolve(event);
@@ -540,7 +534,7 @@ import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
   return {
-	user: locals.user
+    user: locals.user
   };
 };
 ```
@@ -560,12 +554,12 @@ Go back to the `+page.svelte` file we created at the beginning (i.e. the root ro
 {#if $page.data.user}
   <p>Signed in as {$page.data.user.name}</p>
   <form action="/logout" method="POST">
-	<button type="submit">Log out</button>
+    <button type="submit">Log out</button>
   </form>
 {:else}
   <p>Sign in using
     <a href="https://github.com/login/oauth/authorize?scope=user:email&client_id={PUBLIC_GITHUB_ID}"
-	>GitHub</a>
+    >GitHub</a>
   </p>
 {/if}
 ```
