@@ -24,7 +24,7 @@ Whether you're a Svelte enthusiast or not, this guide has you covered. Let's div
 
 ## Getting started
 
-## Authenticate with an OAuth app
+### Authenticate with an OAuth app
 
 To sign in using GitHub you need to register your app with GitHub. There are two types of GitHub apps. "OAuth apps" and––the somewhat confusingly named––"GitHub apps".
 
@@ -40,7 +40,7 @@ Navigate to the app settings page on GitHub:
 
 1. In the top right corner, click your profile picture.
 2. Go to **⚙️ Settings**.
-3. In side panel on the left, go to **<> Developer settings**.
+3. In the side panel on the left, go to **<> Developer settings**.
 4. Still on the left-hand side, go to **OAuth Apps**.
    ![Creating an OAuth app](./static/img/github_oauth_apps.png)
 5. Click the **New OAuth App** button.
@@ -60,6 +60,7 @@ Generate a client secret:
 
 1. Select the app you just registered.
    ![App ID and secret](./static/img/app_secrets.png)
+   > The client id isn't really a secret. I just got a bit carried away with the marker and ended up painting over it too.
 2. Click the **Generate a new client secret** button
 
 The client ID and client secret will be used to create access tokens. It's recomended that you store these inside your application as environment variables. That's exactly what we'll do.
@@ -84,7 +85,7 @@ The `create svelte` command let's you configure the application. In the command 
 
 2. If you want type checking, select either TypeScript or JavaScript with JSDoc comments.
 
-> I'll be using TypeScript. If your're writing plain JavaScript or just reading along and don't know TypeScript, don't fret! The only differences we'll encounter is using the .ts file extension instead of .js, as well as the occational typing of functions––which you can simply omit in your code or mentally erase.
+> I'll be using TypeScript. If your're writing plain JavaScript or just reading along and don't know TypeScript, don't fret! The only differences we'll encounter is using the .ts file extension instead of .js, as well as the occasional typing of functions––which you can simply omit from your code or mentally erase.
 
 3. You won't need any additional packages if you're just following along, but having ESLint and Prettier is nice for linting and code formatting.
 
@@ -97,7 +98,7 @@ PUBLIC_GITHUB_ID="<github id>"
 GITHUB_SECRET="<github secret>"
 ```
 
-> The **PUBLIC\_** prefix is a SvelteKit quirk. It let's us import the environment variable into client-side code. The client id isn't really a secret.
+> The **PUBLIC\_** prefix is a SvelteKit quirk. It let's us import the environment variable into client-side code.
 
 ## Signing in
 
@@ -115,7 +116,7 @@ In a framework like Express.js, you'd do something like this instead to create t
 
 ```js
 app.get('/', (req, res) => {
-	// here you'd handle logic and serve assets etc.
+  // here you'd handle logic and serve assets etc.
 });
 ```
 
@@ -125,14 +126,12 @@ Now, add the code to create the GitHub link inside `+page.svelte`.
 
 ```svelte
 <script lang="ts">
-	import { PUBLIC_GITHUB_ID } from '$env/static/public';
+  import { PUBLIC_GITHUB_ID } from '$env/static/public';
 </script>
 
-<p>
-	Sign in using <a
-		href="https://github.com/login/oauth/authorize?scope=user:email&client_id={PUBLIC_GITHUB_ID}"
-		>GitHub</a
-	>
+<p>Sign in using
+  <a href="https://github.com/login/oauth/authorize?scope=user:email&client_id={PUBLIC_GITHUB_ID}"
+  >GitHub</a>
 </p>
 ```
 
@@ -152,48 +151,54 @@ If you click the link right now, you'll be taken to the authorization page.
 
 ![GitHub authorize application page](./static/img/github_auth.png)
 
-Here you'll se the name of your OAuth app and--if you look carefully--what personal information we want access to.
+Here you'll see the name of your OAuth app and--if you look carefully--what personal information we want access to.
 
-Now it's time for that excercise in trust. Click the **Authorize application** button!
+Now, it's time for that excercise in trust. Click the **Authorize application** button!
 
 ![Missing route for /callback URL path](./static/img/404.png)
 
-That was not very surprising. We havn't created the route for the `/callback` URL path. But, if you look in the search bar, you can see that GitHub has given us a code. Now, let's do someting freaky with it!
+We haven't actually created the route for the `/callback` URL path yet. But, if you look in the search bar, you can see that GitHub still gave us a code. Let's do something freaky with it!
 
 #### 1. Create the route
 
-Firstly, we need to create the route. In SvelteKit, this means creating a new directory inside `routes` called `callback`. We're not actually going to display anything on this route. Instead, we'll just handle all the logic of getting the personal information and then redirect the user to the root route.
+We need to create the route first of all. In SvelteKit, this means creating a new directory inside `routes` called `callback`.
 
-Because we're fetching data and need to load private environment varibales we'll run the code on the server. Create a `+page.server.ts` file inside the `callback` directory.
+We're not going to render a web page. Instead, we'll just handle all the logic to get the personal information. Then, we'll redirect the user back to the root route.
+
+Because we're fetching data and need to load private environment varibales, we'll run the code on the server.
+
+Create a `+page.server.ts` file inside the `callback` directory.
 
 ```js
+// src/routes/callback/+page.server.ts
+
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
-	// TODO: get the temporary code from the query string
+  // TODO: get the temporary code from the query string
 };
 ```
 
-The load function let's us run code before the page is rendered, much like running some logic inside the body of and Express.js route handler before serving the page.
+The load function let's us run code before the page is rendered, much like running some logic inside the body of an Express.js route handler before serving the page.
 
 ```js
 app.get('/callback', (req, res) => {
-	// do some logic
-	// ...
-	// send some assets or redirect
+  // do some logic
+  // ...
+  // send some assets or redirect
 });
 ```
 
 #### 2. Exchange the code for an access token
 
-1. Get the code. SvelteKit provides us with the parsed query string as an object.
+Get the code. SvelteKit provides us with the parsed query string as an object.
 
 ```js
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ url }) => {
-	// get the temporary code from the query string
-	const code = url.searchParams.get('code');
+export const load: PageServerLoad = async ({ url }) => { 
+  // get the temporary code from the query string
+  const code = url.searchParams.get('code');
 };
 ```
 
@@ -201,11 +206,11 @@ In Express.js, you'd do something like this instead. (This is the last Express.j
 
 ```js
 app.get('/callback', (req, res) => {
-	const code = req.query.code;
+  const code = req.query.code;
 });
 ```
 
-2. Handle errors. If you deny access to your personal information, you won't get a code. Instead the response looks something like this:
+Handle errors. If you deny access to your personal information, you won't get a code. Instead the response looks something like this:
 
 ![User denies access](./static/img/access_denied.png)
 
@@ -216,18 +221,17 @@ import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ url, fetch, cookies }) => {
-	// get the temporary code from the query string
-	const code = url.searchParams.get('code');
+  // get the temporary code from the query string
+  const code = url.searchParams.get('code');
 
-	// if no code redirect to the root route
-	if (!code || code === null) {
-      console.log('Oops!');
-		throw redirect(302, '/');
-	}
+  // if no code redirect to the root route 
+  if (!code || code === null) {
+	throw redirect(302, '/');
+  }
 };
 ```
 
-3. Load the environment variables.
+Load the environment variables.
 
 ```js
 import type { PageServerLoad } from './$types';
@@ -236,11 +240,11 @@ import { PUBLIC_GITHUB_ID } from '$env/static/public';
 import { GITHUB_SECRET } from '$env/static/private';
 
 export const load: PageServerLoad = async ({ url }) => {
-	// ...
+  // ...
 };
 ```
 
-3. Post the code back to GitHub using fetch. Now it's time to include both the client id and client secret.
+Post the code back to GitHub using fetch. Now it's time to include both the client id and client secret.
 
 ```js
 // ...
@@ -248,19 +252,19 @@ export const load: PageServerLoad = async ({ url }) => {
 // ...
 
 const data = {
-	client_id: PUBLIC_GITHUB_ID,
-	client_secret: GITHUB_SECRET,
-	code: code
+  client_id: PUBLIC_GITHUB_ID,
+  client_secret: GITHUB_SECRET,
+  code: code
 };
 
 // exchange the code for a token by posting the code back to GitHub
 const response = await fetch('https://github.com/login/oauth/access_token', {
-	method: 'POST',
-	headers: {
-		'Content-Type': 'application/json',
-		Accept: 'application/json'
-	},
-	body: JSON.stringify(data)
+  method: 'POST',
+  headers: {
+	'Content-Type': 'application/json',
+	Accept: 'application/json'
+  },
+  body: JSON.stringify(data)
 });
 ```
 
@@ -270,13 +274,13 @@ The response should look something like this:
 
 ```json
 {
-	"access_token": "gho_CAAWFxgd...",
-	"token_type": "bearer",
-	"scope": "user:email"
+  "access_token": "gho_CAAWFxgd...",
+  "token_type": "bearer",
+  "scope": "user:email"
 }
 ```
 
-4. We'll go ahead and extract the token.
+We'll go ahead and extract the token.
 
 ```js
 // ...
@@ -288,7 +292,7 @@ const result = await response.json();
 const accessToken = result.access_token;
 ```
 
-5. (Extra) To be thorough, we can check exactly what scopes the app now has access to.
+To be thorough, we can check exactly what scopes the app now has access to.
 
 ```js
 // ...
@@ -303,7 +307,7 @@ Again for breivity, we'll handle the case where the app doesn't have access to t
 
 ```js
 if (hasEmailScope === false) {
-	throw redirect(302, '/');
+  throw redirect(302, '/');
 }
 ```
 
@@ -322,7 +326,7 @@ Firstly, let's fetch the user information.
 
 // fetch user information from the GitHub API
 const userResponse = await fetch('https://api.github.com/user', {
-	headers: { Authorization: `Bearer ${accessToken}` }
+  headers: { Authorization: `Bearer ${accessToken}` }
 });
 
 // the user data contains things like the user's name and avatar
@@ -331,19 +335,19 @@ const userData = await userResponse.json();
 
 The user information (i.e. `userData`) looks something like this:
 
-```json
+```js
 {
-	"login": "kiwijos",
-	// ...
-	"avatar_url": "https://avatars.githubusercontent.com/...",
-	// ...
-	"type": "User",
-	// ...
-	"public_repos": 10,
-	"public_gists": 0,
-	"followers": 0,
-	"following": 0
-	// ...
+  login: "kiwijos",
+  ...
+  avatar_url: "https://avatars.githubusercontent.com/...",
+  ...
+  type: "User",
+  ...
+  public_repos: 10,
+  public_gists: 0,
+  followers: 0,
+  following: 0 
+  ...
 }
 ```
 
@@ -352,7 +356,7 @@ Now, let's fetch those emails.
 ```js
 // fetch the user's email addresses from the GitHub API
 const emailResponse = await fetch('https://api.github.com/user/emails', {
-	headers: { Authorization: `Bearer ${accessToken}` }
+  headers: { Authorization: `Bearer ${accessToken}` }
 });
 
 // the email data contains the user's email addressess and whether they are verified etc.
@@ -363,18 +367,18 @@ The email data looks like an array (I've added \*\*\* to obscure any personal de
 
 ```json
 [
-	{
-		"email": "***@***.***",
-		"primary": true,
-		"verified": true,
-		"visibility": "private"
-	},
-	{
-		"email": "***@users.noreply.github.com",
-		"primary": false,
-		"verified": true,
-		"visibility": null
-	}
+  {
+	"email": "***@***.***",
+	"primary": true,
+	"verified": true,
+	"visibility": "private"
+  },
+  {
+	"email": "***@users.noreply.github.com",
+	"primary": false,
+	"verified": true,
+	"visibility": null
+  }
 ]
 ```
 
@@ -405,20 +409,20 @@ We'll make use of `cookies` to create a new cookie called "session" with the acc
 import { redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ url, cookies }) => {
-   // ...
-   // get the access token and check the scopes using the code sample above
-   // ...
+  // ...
+  // get the access token and check the scopes using the code sample above
+  // ...
 
-   // persist the token in a cookie
-   cookies.set('session', accessToken, {
-      path: '/', // send cookie with every request to this site
-      httpOnly: true, // server side only cookie (i.e. not accessible via `document.cookie`)
-      sameSite: 'strict', // send cookie only via requests from this site
-      secure: true, // allow cookie to be sent only in secure contexts (i.e. locally or over HTTPS)
-      maxAge: 60 * 60 * 24 * 30 // make cookie expire after 30 days
-   });
+  // persist the token in a cookie
+  cookies.set('session', accessToken, {
+	path: '/', // send cookie with every request to this site
+	httpOnly: true, // server side only cookie (i.e. not accessible via `document.cookie`)
+	sameSite: 'strict', // send cookie only via requests from this site
+	secure: true, // allow cookie to be sent only in secure contexts (i.e. locally or over HTTPS)
+	maxAge: 60 * 60 * 24 * 30 // make cookie expire after 30 days
+  });
 
-   throw redirect(302, '/');
+  throw redirect(302, '/');
 }
 ```
 
@@ -444,13 +448,13 @@ We're NOT going to implement any protected routes. But you could do it by checki
 import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	if (event.url.pathname.startsWith('/protected')) {
-		// check credentials
-		// redirect if incorrect
-	}
+  if (event.url.pathname.startsWith('/protected')) {
+	// check credentials
+	// redirect if incorrect
+  }
 
-	// handle the request as normal
-	return await resolve(event);
+  // handle the request as normal
+  return await resolve(event);
 };
 ```
 
@@ -466,13 +470,13 @@ If there is no access token stored in the session cookie, we'll simply pass the 
 
 ```js
 export const handle: Handle = async ({ event, resolve }) => {
-	// get the token from the cookie
-	const accessToken = event.cookies.get('session');
+  // get the token from the cookie
+  const accessToken = event.cookies.get('session');
 
-	if (!accessToken || accessToken === null) {
-		// handle the request as normal
-		return await resolve(event);
-	}
+  if (!accessToken || accessToken === null) {
+	// handle the request as normal
+	return await resolve(event);
+  } 
 };
 ```
 
@@ -487,14 +491,14 @@ This will look very familiar.
 
 // fetch the user information
 const userResponse = await fetch('https://api.github.com/user', {
-	headers: { Authorization: `Bearer ${accessToken}` }
+  headers: { Authorization: `Bearer ${accessToken}` }
 });
 
 const userData = await userResponse.json();
 
 // fetch the user's email addresses
 const emailResponse = await fetch('https://api.github.com/user/emails', {
-	headers: { Authorization: `Bearer ${accessToken}` }
+  headers: { Authorization: `Bearer ${accessToken}` }
 });
 
 const emailData = await emailResponse.json();
@@ -508,18 +512,18 @@ Notice that were're searching the emails array to find the email object with the
 
 ```js
 export const handle: Handle = async ({ event, resolve }) => {
-	// ...
-	// get access token and fetch information using the code samples above
-	// ...
+  // ...
+  // get access token and fetch information using the code samples above
+  // ...
 
 
-	// add the user to the request
-	event.locals.user = {
-		name: userData.login,
-		email: emailData.find((email) => email.primary === true).email
-	};
+  // add the user to the request
+  event.locals.user = {
+	name: userData.login,
+	email: emailData.find((email) => email.primary === true).email
+  };
 
-	return await resolve(event);
+  return await resolve(event);
 };
 ```
 
@@ -535,9 +539,9 @@ Create a new file called `+layout.server.ts` directly inside the routes folder. 
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
-	return {
-		user: locals.user
-	};
+  return {
+	user: locals.user
+  };
 };
 ```
 
@@ -549,22 +553,20 @@ Go back to the `+page.svelte` file we created at the beginning (i.e. the root ro
 
 ```svelte
 <script lang="ts">
-	import { PUBLIC_GITHUB_ID } from '$env/static/public';
-	import { page } from '$app/stores';
+  import { PUBLIC_GITHUB_ID } from '$env/static/public';
+  import { page } from '$app/stores';
 </script>
 
 {#if $page.data.user}
-	<p>Signed in as {$page.data.user.name}</p>
-	<form action="/logout" method="POST">
-		<button type="submit">Log out</button>
-	</form>
+  <p>Signed in as {$page.data.user.name}</p>
+  <form action="/logout" method="POST">
+	<button type="submit">Log out</button>
+  </form>
 {:else}
-	<p>
-		Sign in using <a
-			href="https://github.com/login/oauth/authorize?scope=user:email&client_id={PUBLIC_GITHUB_ID}"
-			>GitHub</a
-		>
-	</p>
+  <p>Sign in using
+    <a href="https://github.com/login/oauth/authorize?scope=user:email&client_id={PUBLIC_GITHUB_ID}"
+	>GitHub</a>
+  </p>
 {/if}
 ```
 
@@ -572,6 +574,6 @@ I'll leave it up to you to implement the logout logic for now. If you wan't you 
 
 ## Final notes
 
-There are still a few things that we havn't gotten around too. For instance, we're not handling the case where the user revokes access to their information after they signed in to our app.
+There are still a few things that we haven't gotten around too. For instance, we're not handling the case where the user revokes access to their information after they signed in.
 
 But hopefully, you can now sign into your app using GitHub.
